@@ -1,0 +1,4 @@
+LDI r1 0x02
+LDI r2 0x04
+ADD r1 r2 r3
+ADD r3 r0 r0
