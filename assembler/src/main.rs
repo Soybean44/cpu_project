@@ -16,5 +16,8 @@ fn main() {
         std::process::exit(1);
     }
     let contents = contents.unwrap();
-    dbg!(assembler::assemble(&contents));
+    let machine_code = assembler::assemble(&contents);
+    for instruction in machine_code {
+        println!("{:#04x}", instruction);
+    }
 }

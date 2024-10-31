@@ -7,6 +7,7 @@ pub enum OpCodes {
 }
 
 const REGISTERS: phf::Map<&'static str, u16> = phf_map! {
+    "r0" => 0x0,
     "r1" => 0x1,
     "r2" => 0x2,
     "r3" => 0x3,
@@ -51,7 +52,7 @@ pub fn assemble(src: &str) -> Vec<u16> {
                 }
                 instruction = OpCodes::LDI as u16
                     | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
-                    | u16::from_str_radix(item[2], 16).unwrap_or(0x00);
+                    | u16::from_str_radix(&item[2][2..], 16).unwrap_or(0x00);
             }
             _ => continue,
         }
