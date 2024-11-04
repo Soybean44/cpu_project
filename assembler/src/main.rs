@@ -1,5 +1,4 @@
-mod assembler;
-
+mod parser;
 use std::env;
 
 fn main() {
@@ -10,5 +9,5 @@ fn main() {
     }
     let input_filename = &args[1];
     let output_filename = &args[2];
-    assemble_file(input_filename);
+    assembler::assemble_file(input_filename, output_filename);
 }

@@ -25,7 +25,7 @@ const REGISTERS: phf::Map<&'static str, u16> = phf_map! {
     "r15" => 0xf,
 };
 
-pub fn assemble(src: &str) -> Vec<u16> {
+pub fn parse_assembly(src: &str) -> Vec<u16> {
     let src_arr: Vec<Vec<&str>> = src.lines().map(|x| x.split(" ").collect()).collect();
     let mut machine_code = vec![];
     for item in src_arr {
