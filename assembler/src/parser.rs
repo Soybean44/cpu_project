@@ -2,8 +2,10 @@ use phf::phf_map;
 
 pub enum OpCodes {
     NOP = 0x0000,
+    HLT = 0x1000,
     ADD = 0x2000,
     LDI = 0x8000,
+    DIS = 0xF000,
 }
 
 const REGISTERS: phf::Map<&'static str, u16> = phf_map! {
@@ -35,6 +37,7 @@ pub fn parse_assembly(src: &str) -> Vec<u16> {
         }
         match item[0] {
             "NOP" => instruction = OpCodes::NOP as u16,
+            "HLT" => instruction = OpCodes::HLT as u16,
             "ADD" => {
                 if item.len() < 4 {
                     eprintln!("Error add has too few arguments");
@@ -53,6 +56,14 @@ pub fn parse_assembly(src: &str) -> Vec<u16> {
                 instruction = OpCodes::LDI as u16
                     | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
                     | u16::from_str_radix(&item[2][2..], 16).unwrap_or(0x00);
+            }
+            "DIS" => {
+                if item.len() < 2 {
+                    eprintln!("Error add has too few arguments");
+                    std::process::exit(1);
+                }
+                instruction =
+                    OpCodes::DIS as u16 | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8;
             }
             _ => continue,
         }
