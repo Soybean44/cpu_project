@@ -1,0 +1,9 @@
+DIS r0
+LDI r1 0x00
+LDI r3 0x00
+LDI r2 0x01
+ADD r1 r2 r3
+ADD r3 r0 r1
+DIS r1
+JMP 0x04
+HLT
