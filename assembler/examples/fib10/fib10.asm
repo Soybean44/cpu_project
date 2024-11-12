@@ -8,6 +8,8 @@ DIS r1
 ADD r1 r2 r2
 DIS r2
 SUB r3 r4 r3
-JNZ r3 0x05
+CMP r0 r3 r5 ; Check if 0 is less than r3 and put flags in r5
+RSH r5 r5 ; Shift r5 to the right to check if 0 is less than r3
+JE r5 0x05
 HLT
 

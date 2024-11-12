@@ -1,8 +1,8 @@
 DIS r0
 LDI r1 0x00
-LDI r3 0x00
 LDI r2 0x01
+CMP r0 r0 r3
 ADD r1 r2 r1
 DIS r1
-JNZ r2 0x04
+JE r4 0x04
 HLT

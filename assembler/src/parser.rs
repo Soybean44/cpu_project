@@ -5,8 +5,14 @@ pub enum OpCodes {
     HLT = 0x1000,
     ADD = 0x2000,
     SUB = 0x3000,
-    LDI = 0x8000,
-    JNZ = 0x9000,
+    OR = 0x4000,
+    AND = 0x5000,
+    XOR = 0x6000,
+    NOT = 0x7000,
+    RSH = 0x8000,
+    CMP = 0x9000,
+    LDI = 0xA000,
+    JE = 0xB000,
     DIS = 0xF000,
 }
 
@@ -60,6 +66,64 @@ pub fn parse_assembly(src: &str) -> Vec<u16> {
                     | REGISTERS.get(item[2]).cloned().unwrap_or(0x00) << 4
                     | REGISTERS.get(item[3]).cloned().unwrap_or(0x00);
             }
+            "OR" => {
+                if item.len() < 4 {
+                    eprintln!("Error OR has too few arguments");
+                    std::process::exit(1);
+                }
+                instruction = OpCodes::OR as u16
+                    | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
+                    | REGISTERS.get(item[2]).cloned().unwrap_or(0x00) << 4
+                    | REGISTERS.get(item[3]).cloned().unwrap_or(0x00);
+            }
+            "AND" => {
+                if item.len() < 4 {
+                    eprintln!("Error AND has too few arguments");
+                    std::process::exit(1);
+                }
+                instruction = OpCodes::AND as u16
+                    | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
+                    | REGISTERS.get(item[2]).cloned().unwrap_or(0x00) << 4
+                    | REGISTERS.get(item[3]).cloned().unwrap_or(0x00);
+            }
+            "XOR" => {
+                if item.len() < 4 {
+                    eprintln!("Error XOR has too few arguments");
+                    std::process::exit(1);
+                }
+                instruction = OpCodes::XOR as u16
+                    | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
+                    | REGISTERS.get(item[2]).cloned().unwrap_or(0x00) << 4
+                    | REGISTERS.get(item[3]).cloned().unwrap_or(0x00);
+            }
+            "NOT" => {
+                if item.len() < 3 {
+                    eprintln!("Error NOT has too few arguments");
+                    std::process::exit(1);
+                }
+                instruction = OpCodes::NOT as u16
+                    | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
+                    | REGISTERS.get(item[2]).cloned().unwrap_or(0x00);
+            }
+            "RSH" => {
+                if item.len() < 3 {
+                    eprintln!("Error RSH has too few arguments");
+                    std::process::exit(1);
+                }
+                instruction = OpCodes::RSH as u16
+                    | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
+                    | REGISTERS.get(item[2]).cloned().unwrap_or(0x00);
+            }
+            "CMP" => {
+                if item.len() < 4 {
+                    eprintln!("Error CMP has too few arguments");
+                    std::process::exit(1);
+                }
+                instruction = OpCodes::CMP as u16
+                    | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
+                    | REGISTERS.get(item[2]).cloned().unwrap_or(0x00) << 4
+                    | REGISTERS.get(item[3]).cloned().unwrap_or(0x00);
+            }
             "LDI" => {
                 if item.len() < 3 {
                     eprintln!("Error LDI has too few arguments");
@@ -69,12 +133,12 @@ pub fn parse_assembly(src: &str) -> Vec<u16> {
                     | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
                     | u16::from_str_radix(&item[2][2..], 16).unwrap_or(0x00);
             }
-            "JNZ" => {
+            "JE" => {
                 if item.len() < 3 {
-                    eprintln!("Error JNZ has too few arguments");
+                    eprintln!("Error JE has too few arguments");
                     std::process::exit(1);
                 }
-                instruction = OpCodes::JNZ as u16
+                instruction = OpCodes::JE as u16
                     | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
                     | u16::from_str_radix(&item[2][2..], 16).unwrap_or(0x00);
             }
