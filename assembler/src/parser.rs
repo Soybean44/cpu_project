@@ -4,8 +4,9 @@ pub enum OpCodes {
     NOP = 0x0000,
     HLT = 0x1000,
     ADD = 0x2000,
+    SUB = 0x3000,
     LDI = 0x8000,
-    JMP = 0x9000,
+    JNZ = 0x9000,
     DIS = 0xF000,
 }
 
@@ -49,6 +50,16 @@ pub fn parse_assembly(src: &str) -> Vec<u16> {
                     | REGISTERS.get(item[2]).cloned().unwrap_or(0x00) << 4
                     | REGISTERS.get(item[3]).cloned().unwrap_or(0x00);
             }
+            "SUB" => {
+                if item.len() < 4 {
+                    eprintln!("Error SUB has too few arguments");
+                    std::process::exit(1);
+                }
+                instruction = OpCodes::SUB as u16
+                    | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
+                    | REGISTERS.get(item[2]).cloned().unwrap_or(0x00) << 4
+                    | REGISTERS.get(item[3]).cloned().unwrap_or(0x00);
+            }
             "LDI" => {
                 if item.len() < 3 {
                     eprintln!("Error LDI has too few arguments");
@@ -58,13 +69,14 @@ pub fn parse_assembly(src: &str) -> Vec<u16> {
                     | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
                     | u16::from_str_radix(&item[2][2..], 16).unwrap_or(0x00);
             }
-            "JMP" => {
-                if item.len() < 2 {
-                    eprintln!("Error JMP has too few arguments");
+            "JNZ" => {
+                if item.len() < 3 {
+                    eprintln!("Error JNZ has too few arguments");
                     std::process::exit(1);
                 }
-                instruction =
-                    OpCodes::JMP as u16 | u16::from_str_radix(&item[1][2..], 16).unwrap_or(0x00);
+                instruction = OpCodes::JNZ as u16
+                    | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
+                    | u16::from_str_radix(&item[2][2..], 16).unwrap_or(0x00);
             }
             "DIS" => {
                 if item.len() < 2 {
