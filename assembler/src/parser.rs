@@ -13,6 +13,8 @@ pub enum OpCodes {
     CMP = 0x9000,
     LDI = 0xA000,
     JE = 0xB000,
+    LDR = 0xC000,
+    STR = 0xD000,
     DIS = 0xF000,
 }
 
@@ -142,13 +144,26 @@ pub fn parse_assembly(src: &str) -> Vec<u16> {
                     | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
                     | u16::from_str_radix(&item[2][2..], 16).unwrap_or(0x00);
             }
-            "DIS" => {
-                if item.len() < 2 {
-                    eprintln!("Error DIS has too few arguments");
+            "LDr" => {
+                if item.len() < 3 {
+                    eprintln!("Error LDR has too few arguments");
                     std::process::exit(1);
                 }
-                instruction =
-                    OpCodes::DIS as u16 | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8;
+                instruction = OpCodes::LDR as u16
+                    | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
+                    | u16::from_str_radix(&item[2][2..], 16).unwrap_or(0x00);
+            }
+            "STR" => {
+                if item.len() < 3 {
+                    eprintln!("Error STR has too few arguments");
+                    std::process::exit(1);
+                }
+                instruction = OpCodes::STR as u16
+                    | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
+                    | u16::from_str_radix(&item[2][2..], 16).unwrap_or(0x00);
+            }
+            "DIS" => {
+                panic!("DIS is depecated")
             }
             _ => continue,
         }
