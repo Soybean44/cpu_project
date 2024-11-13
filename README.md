@@ -13,3 +13,7 @@ To emulate a jump if greater or less than, shift the registers from the cmp inst
 The CMP instruction formats the first three registers from left to right as "greater than, equals, less than"
 Since right shift is a built in to the cpu, it is recomended to use less than whenever possible, flipping the arguments of the `CMP` instruction
 
+### Memory and outputting 
+Currently the memory is not intrinsically tied to the cpu, so you can implement whatever memory solution you would like to have.
+The cpu can only access 265 bytes of memory at a time, but with banking, it allows the cpu to index up to 64k of memory to use (as of the current setup).
+As well with the current setup, you can access one 8 bit output port and one 8 bit input port, however more may be implemented in the future if needed.
