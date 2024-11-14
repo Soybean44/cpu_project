@@ -37,8 +37,27 @@ const REGISTERS: phf::Map<&'static str, u16> = phf_map! {
     "r15" => 0xf,
 };
 
+fn parse_arg(arg: &str) -> u16 {
+    let test = arg.parse::<u8>();
+    let chars: Vec<_> = arg.chars().collect();
+    if arg[..2] == *"0x" {
+        return u16::from_str_radix(&arg[2..], 16).unwrap_or(0x00);
+    } else if test.is_ok() {
+        return u16::from_str_radix(&arg[2..], 10).unwrap_or(0x00);
+    } else if chars[0] == '"' && chars.len() == 3 {
+        return chars[1] as u16;
+    } else {
+        eprintln!("Error in argument parsing");
+        std::process::exit(1);
+    }
+}
+
 pub fn parse_assembly(src: &str) -> Vec<u16> {
-    let src_arr: Vec<Vec<&str>> = src.lines().map(|x| x.split(" ").collect()).collect();
+    let cleaned_src = src.replace("\" \"", "0x20");
+    let src_arr: Vec<Vec<&str>> = cleaned_src
+        .lines()
+        .map(|x| x.split(" ").collect())
+        .collect();
     let mut machine_code = vec![];
     for item in src_arr {
         let instruction: u16;
@@ -133,7 +152,7 @@ pub fn parse_assembly(src: &str) -> Vec<u16> {
                 }
                 instruction = OpCodes::LDI as u16
                     | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
-                    | u16::from_str_radix(&item[2][2..], 16).unwrap_or(0x00);
+                    | parse_arg(&item[2]);
             }
             "JE" => {
                 if item.len() < 3 {
@@ -142,16 +161,16 @@ pub fn parse_assembly(src: &str) -> Vec<u16> {
                 }
                 instruction = OpCodes::JE as u16
                     | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
-                    | u16::from_str_radix(&item[2][2..], 16).unwrap_or(0x00);
+                    | parse_arg(&item[2]);
             }
-            "LDr" => {
+            "LDR" => {
                 if item.len() < 3 {
                     eprintln!("Error LDR has too few arguments");
                     std::process::exit(1);
                 }
                 instruction = OpCodes::LDR as u16
                     | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
-                    | u16::from_str_radix(&item[2][2..], 16).unwrap_or(0x00);
+                    | parse_arg(&item[2]);
             }
             "STR" => {
                 if item.len() < 3 {
@@ -160,7 +179,7 @@ pub fn parse_assembly(src: &str) -> Vec<u16> {
                 }
                 instruction = OpCodes::STR as u16
                     | REGISTERS.get(item[1]).cloned().unwrap_or(0x00) << 8
-                    | u16::from_str_radix(&item[2][2..], 16).unwrap_or(0x00);
+                    | parse_arg(&item[2]);
             }
             "DIS" => {
                 panic!("DIS is depecated")
